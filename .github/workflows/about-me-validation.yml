@@ -1,0 +1,70 @@
+name: About Me Validation
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  validate-about-me:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Display Pull Request Information
+        run: |
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Pull Request Branch: ${{ github.head_ref }}"
+          echo "Target Branch: ${{ github.base_ref }}"
+
+      - name: Validate About Directory
+        run: |
+          if [ ! -d "about" ]; then
+            echo "ERROR: about directory does not exist."
+            exit 1
+          fi
+          echo "About folder exists."
+
+      - name: List Markdown Files
+        run: |
+          echo "Markdown files found:"
+          find about -type f -name "*.md"
+
+      - name: Validate Markdown Files Exist
+        run: |
+          count=$(find about -type f -name "*.md" | wc -l)
+
+          if [ "$count" -eq 0 ]; then
+            echo "ERROR: No markdown files found in about directory."
+            exit 1
+          fi
+
+      - name: Check for Empty Markdown Files
+        run: |
+          failed=0
+
+          for file in $(find about -type f -name "*.md"); do
+            if [ ! -s "$file" ]; then
+              echo "ERROR: Empty file found -> $file"
+              failed=1
+            else
+              echo "Valid file -> $file"
+            fi
+          done
+
+          if [ "$failed" -eq 1 ]; then
+            exit 1
+          fi
+
+      - name: Count Profiles
+        run: |
+          count=$(find about -type f -name "*.md" | wc -l)
+          echo "Number of trainee profiles: $count"
+
+      - name: Validation Successful
+        run: |
+          echo "About Me validation completed successfully."
