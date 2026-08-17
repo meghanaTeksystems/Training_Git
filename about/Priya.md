@@ -4,7 +4,7 @@
 Priya Adhikari
 
 ## Education
-<Your Education>
+B.E computer science and engineering
 
 ## Background / Role
 Technical Trainee
